@@ -1,0 +1,58 @@
+# Visual Studio specific files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.log
+*.pdb
+*.ilk
+*.aps
+*.bsc
+*.sbr
+*.tlb
+*.tlh
+*.tmp
+*.bak
+*.cache
+*.ncb
+*.res
+*.pch
+*.ipch
+*.obj
+*.o
+
+# NuGet packages
+packages/
+*.nupkg
+.nuget/packages/
+
+# Rider specific files
+.idea/
+*.iml
+
+# Node.js (if used for frontend)
+node_modules/
+npm-debug.log
+
+# Test results
+TestResults/
+*.trx
+
+# User-specific files that don't need to be in source control
+appsettings.Development.json
+appsettings.Production.json
+# Or, if you want to keep appsettings.json but ignore user secrets:
+# *.usersecrets
+
+# Ignore all files with the specified name in any folder
+config.json
+
+# Ignore all files with the specified extension in any folder
+*.log
