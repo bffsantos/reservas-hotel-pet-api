@@ -13,5 +13,6 @@ namespace ReservasHotelPetAPI.Context
         public DbSet<Animal> Animais { get; set; }
         public DbSet<Tutor> Tutores { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+
     }
 }

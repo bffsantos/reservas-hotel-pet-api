@@ -30,7 +30,7 @@ namespace ReservasHotelPetAPI.Controllers
         [HttpGet("Animais")]
         public ActionResult<IEnumerable<Tutor>> GetTutoresAnimais()
         {
-            var tutores = _context.Tutores.Include(a => a.Animais).ToList();
+            var tutores = _context.Tutores.Include(t => t.Animais).ToList();
 
             if (tutores is null)
                 return NotFound("Tutores não encontrados.");

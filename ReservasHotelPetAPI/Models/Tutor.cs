@@ -9,10 +9,11 @@ namespace ReservasHotelPetAPI.Models
     {
         public Tutor()
         {
-            Animais = new Collection<Tutor>();
+            Animais = new Collection<Animal>();
         }
 
         [Key]
+        [Column("Id")]
         public int Id { get; set; }
         [Required]
         [StringLength(80)]
@@ -33,7 +34,7 @@ namespace ReservasHotelPetAPI.Models
         [Required]
         [StringLength(80)]
         public string? Email { get; set; }
-        public ICollection<Tutor> Animais { get; set;}
+        public ICollection<Animal> Animais { get; set;}
         public int UsuarioId { get; set; }
         public Usuario Usuario { get; set; }
     }

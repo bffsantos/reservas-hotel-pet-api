@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ReservasHotelPetAPI.Models
 {
@@ -21,7 +22,9 @@ namespace ReservasHotelPetAPI.Models
         [Required]
         [StringLength(50)]
         public string? Raca { get; set; }
+        [Column("TutorId")]
         public int TutorId { get; set; }
+        [JsonIgnore]
         public Tutor? Tutor { get; set; }
     }
 }
