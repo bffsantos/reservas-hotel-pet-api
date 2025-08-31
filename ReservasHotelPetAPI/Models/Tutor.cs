@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Newtonsoft.Json.Serialization;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,25 +16,36 @@ namespace ReservasHotelPetAPI.Models
         [Key]
         [Column("Id")]
         public int Id { get; set; }
-        [Required]
-        [StringLength(80)]
+
+        [Required(ErrorMessage = "O campo nome é obrigatório.")]
+        [StringLength(80, MinimumLength = 3, ErrorMessage = "O nome deve ter entre {2} e {1} caracteres.")]
         public string? Nome { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "O campo idade é obrigatório.")]
+        [Range(18, 200, ErrorMessage = "A idade deve estar entre {1} e {2} anos")]
         public int Idade { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "O campo sexo é obrigatório.")]
         [StringLength(1)]
         public char Sexo { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "O campo data de nascimento é obrigatório.")]
         public DateTime DataNascimento { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "O campo endereço é obrigatório.")]
         [StringLength(100)]
         public string? Endereco { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "O campo telefone é obrigatório.")]
         [StringLength(80)]
+        [Phone]
         public string? Telefone { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "O campo e-mail é obrigatório.")]
         [StringLength(80)]
+        [EmailAddress]
         public string? Email { get; set; }
+
         public ICollection<Animal> Animais { get; set;}
         public int UsuarioId { get; set; }
         public Usuario Usuario { get; set; }

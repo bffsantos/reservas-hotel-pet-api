@@ -6,7 +6,7 @@ using ReservasHotelPetAPI.Models;
 namespace ReservasHotelPetAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TutoresController : ControllerBase
     {
         private readonly ApiReservasHotelPetContext _context;
@@ -38,7 +38,7 @@ namespace ReservasHotelPetAPI.Controllers
             return tutores;
         }
 
-        [HttpGet("{id:int}", Name = "ObterTutor")]
+        [HttpGet("{id:int:min(1)}", Name = "ObterTutor")]
         public ActionResult<Tutor> Get(int id)
         {
             var tutor = _context.Tutores.FirstOrDefault(a => a.Id == id);
@@ -61,7 +61,7 @@ namespace ReservasHotelPetAPI.Controllers
             return new CreatedAtRouteResult("ObterTutor", new { id = tutor.Id }, tutor);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int:min(1)}")]
         public ActionResult Put(int id, Tutor tutor)
         {
             if (id != tutor.Id)
@@ -73,7 +73,7 @@ namespace ReservasHotelPetAPI.Controllers
             return Ok(tutor);
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int:min(1)}")]
         public ActionResult Delete(int id)
         {
             var tutor = _context.Tutores.FirstOrDefault(a => a.Id == id);

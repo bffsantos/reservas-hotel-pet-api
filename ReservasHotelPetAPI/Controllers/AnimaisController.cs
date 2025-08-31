@@ -7,7 +7,7 @@ using System.Collections;
 namespace ReservasHotelPetAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AnimaisController : ControllerBase
     {
         private readonly ApiReservasHotelPetContext _context;
@@ -18,20 +18,27 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Animal>> Get()
+        public async Task<ActionResult<IEnumerable<Animal>>> Get()
         {
-            var animais = _context.Animais.ToList();
+            try
+            {
+                var animais = await _context.Animais.AsNoTracking().ToListAsync();
 
-            if(animais is null)
-                return NotFound("Animais não encontrados.");
-            
-            return animais;
+                if (animais is null)
+                    return NotFound("Animais não encontrados.");
+
+                return animais;
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
+            }
         }
 
-        [HttpGet("{id:int}", Name = "ObterAnimal")]
-        public ActionResult<Animal> Get(int id)
+        [HttpGet("{id:int:min(1)}", Name = "ObterAnimal")]
+        public async Task<ActionResult<Animal>> Get(int id)
         {
-            var animal = _context.Animais.FirstOrDefault(a => a.Id == id);
+            var animal = await _context.Animais.FirstOrDefaultAsync(a => a.Id == id);
 
             if (animal == null)
                 return NotFound("Animal não encontrado.");
@@ -51,7 +58,7 @@ namespace ReservasHotelPetAPI.Controllers
             return new CreatedAtRouteResult("ObterAnimal", new { id = animal.Id }, animal);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int:min(1)}")]
         public ActionResult Put(int id, Animal animal)
         {
             if (id != animal.Id)
@@ -63,7 +70,7 @@ namespace ReservasHotelPetAPI.Controllers
             return Ok(animal);
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int:min(1)}")]
         public ActionResult Delete(int id)
         {
             var animal = _context.Animais.FirstOrDefault(a => a.Id == id);
