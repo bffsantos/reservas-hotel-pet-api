@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
+using ReservasHotelPetAPI.Filters;
 using ReservasHotelPetAPI.Models;
 using System.Collections;
 
@@ -11,28 +12,26 @@ namespace ReservasHotelPetAPI.Controllers
     public class AnimaisController : ControllerBase
     {
         private readonly ApiReservasHotelPetContext _context;
+        private readonly ILogger _logger;
 
-        public AnimaisController(ApiReservasHotelPetContext context)
+        public AnimaisController(ApiReservasHotelPetContext context, ILogger<AnimaisController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<Animal>>> Get()
         {
-            try
-            {
-                var animais = await _context.Animais.AsNoTracking().ToListAsync();
+            _logger.LogInformation("==============GET api/Animais=============");
 
-                if (animais is null)
-                    return NotFound("Animais não encontrados.");
+            var animais = await _context.Animais.AsNoTracking().ToListAsync();
 
-                return animais;
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar sua solicitação.");
-            }
+            if (animais is null)
+                return NotFound("Animais não encontrados.");
+
+            return animais;
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterAnimal")]
