@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReservasHotelPetAPI.Context;
 
@@ -11,9 +12,11 @@ using ReservasHotelPetAPI.Context;
 namespace ReservasHotelPetAPI.Migrations
 {
     [DbContext(typeof(ApiReservasHotelPetContext))]
-    partial class ApiReservasHotelPetContextModelSnapshot : ModelSnapshot
+    [Migration("20250902172112_PopulaCpfTutores")]
+    partial class PopulaCpfTutores
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,8 +77,7 @@ namespace ReservasHotelPetAPI.Migrations
 
                     b.Property<string>("Cpf")
                         .IsRequired()
-                        .HasMaxLength(14)
-                        .HasColumnType("varchar(14)");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("DataNascimento")
                         .HasColumnType("datetime(6)");
@@ -100,6 +102,7 @@ namespace ReservasHotelPetAPI.Migrations
 
                     b.Property<string>("Sexo")
                         .IsRequired()
+                        .HasMaxLength(1)
                         .HasColumnType("varchar(1)");
 
                     b.Property<string>("Telefone")

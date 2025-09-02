@@ -4,14 +4,12 @@ using ReservasHotelPetAPI.Repositories.Interfaces;
 
 namespace ReservasHotelPetAPI.Repositories
 {
-    public class TutorRepository : ITutorRepository
+    public class TutorRepository : Repository<Tutor>, ITutorRepository
     {
-        private readonly ApiReservasHotelPetContext _context;
-
-        public TutorRepository(ApiReservasHotelPetContext context)
+        public TutorRepository(ApiReservasHotelPetContext context) : base(context)
         {
-            _context = context;
         }
+
         public IEnumerable<Tutor> GetTutores()
         {
             return _context.Tutores.ToList();

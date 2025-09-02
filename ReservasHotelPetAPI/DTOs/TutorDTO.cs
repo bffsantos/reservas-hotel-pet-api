@@ -1,21 +1,9 @@
-﻿using Newtonsoft.Json.Serialization;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace ReservasHotelPetAPI.Models
+namespace ReservasHotelPetAPI.DTOs
 {
-    [Table("Tutores")]
-    public class Tutor
+    public class TutorDTO
     {
-        public Tutor()
-        {
-            Animais = new Collection<Animal>();
-        }
-
-        [Key]
-        [Column("Id")]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O campo nome é obrigatório.")]
@@ -49,13 +37,5 @@ namespace ReservasHotelPetAPI.Models
         [StringLength(80)]
         [EmailAddress]
         public string? Email { get; set; }
-
-        [JsonIgnore]
-        public ICollection<Animal> Animais { get; set;}
-
-        public int UsuarioId { get; set; }
-
-        [JsonIgnore]
-        public Usuario? Usuario { get; set; }
     }
 }

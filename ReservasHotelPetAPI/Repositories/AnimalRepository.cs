@@ -5,57 +5,15 @@ using ReservasHotelPetAPI.Repositories.Interfaces;
 
 namespace ReservasHotelPetAPI.Repositories
 {
-    public class AnimalRepository : IAnimalRepository
+    public class AnimalRepository : Repository<Animal>, IAnimalRepository
     {
-        private readonly ApiReservasHotelPetContext _context;
-
-        public AnimalRepository(ApiReservasHotelPetContext context)
+        public AnimalRepository(ApiReservasHotelPetContext context) : base(context)
         {
-            _context = context;
         }
 
-        public IEnumerable<Animal> GetAnimais()
+        public IEnumerable<Animal> GetAnimaisPorTutor(int tutorId)
         {
-            return _context.Animais.ToList();
+            return GetAll().Where(a => a.TutorId == tutorId);
         }
-
-        public Animal GetAnimal(int id)
-        {
-            return _context.Animais.FirstOrDefault(a => a.Id == id);
-        }
-
-        public Animal Create(Animal animal)
-        {
-            if (animal == null)
-                throw new ArgumentNullException(nameof(animal));
-
-            _context.Animais.Add(animal);
-            _context.SaveChanges();
-
-            return animal;
-        }
-
-        public Animal Update(Animal animal)
-        {
-            if (animal == null)
-                throw new ArgumentNullException(nameof(animal));
-
-            _context.Entry(animal).State = EntityState.Modified;
-            _context.SaveChanges();
-
-            return animal;
-        }
-
-        public Animal Delete(int id)
-        {
-            var animal = _context.Animais.Find(id);
-
-            if (animal == null)
-                throw new ArgumentNullException(nameof(animal));
-
-            _context.Animais.Remove(animal);
-            _context.SaveChanges();
-            return animal;
-        }               
     }
 }

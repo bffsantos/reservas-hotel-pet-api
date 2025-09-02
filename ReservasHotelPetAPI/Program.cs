@@ -3,6 +3,8 @@ using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.Extensions;
 using ReservasHotelPetAPI.Filters;
 using ReservasHotelPetAPI.Logging;
+using ReservasHotelPetAPI.Repositories;
+using ReservasHotelPetAPI.Repositories.Interfaces;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +32,11 @@ builder.Services.AddDbContext<ApiReservasHotelPetContext>(optionss =>
                                     ServerVersion.AutoDetect (mySqlConnection)));
 
 builder.Services.AddScoped<ApiLoggingFilter>();
+
+builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
+builder.Services.AddScoped<ITutorRepository, TutorRepository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
 {

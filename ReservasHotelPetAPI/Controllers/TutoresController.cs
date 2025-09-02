@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
+using ReservasHotelPetAPI.DTOs;
+using ReservasHotelPetAPI.DTOs.Mappings;
 using ReservasHotelPetAPI.Models;
+using ReservasHotelPetAPI.Repositories.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace ReservasHotelPetAPI.Controllers
 {
@@ -9,82 +13,103 @@ namespace ReservasHotelPetAPI.Controllers
     [Route("api/[controller]")]
     public class TutoresController : ControllerBase
     {
-        private readonly ApiReservasHotelPetContext _context;
+        //private readonly IRepository<Tutor> _repository;
+        private readonly IUnitOfWork _uof;
+        private readonly ILogger<TutoresController> _logger;
 
-        public TutoresController(ApiReservasHotelPetContext context)
+        public TutoresController(IUnitOfWork uof, ILogger<TutoresController> logger)
         {
-            _context = context;
+            _uof = uof;
+            _logger = logger;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Tutor>> Get()
+        public ActionResult<IEnumerable<TutorDTO>> Get()
         {
-            var tutores = _context.Tutores.ToList();
-            if (tutores is null)
+            var tutores = _uof.TutorRepository.GetAll();
+
+            if(tutores is null)
             {
-                return NotFound("Tutores não encontrados.");
+                _logger.LogWarning("Não existem tutores.");
+                return NotFound("Não existem tutores.");
             }
-            return tutores;
-        }
 
-        [HttpGet("Animais")]
-        public ActionResult<IEnumerable<Tutor>> GetTutoresAnimais()
-        {
-            var tutores = _context.Tutores.Include(t => t.Animais).ToList();
+            var tutoresDto = TutorDTOMappingExtensions.ToTutorDTOList(tutores);
 
-            if (tutores is null)
-                return NotFound("Tutores não encontrados.");
-
-            return tutores;
+            return Ok(tutoresDto);
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterTutor")]
-        public ActionResult<Tutor> Get(int id)
+        public ActionResult<TutorDTO> Get(int id)
         {
-            var tutor = _context.Tutores.FirstOrDefault(a => a.Id == id);
+            var tutor = _uof.TutorRepository.Get(t => t.Id == id);
 
-            if (tutor == null)
-                return NotFound("Tutor não encontrado.");
+            if (tutor is null)
+            {
+                _logger.LogWarning($"Tutor com id = {id} não encontrado.");
+                return NotFound($"Tutor com id = {id} não encontrado.");
+            }
 
-            return tutor;
+            var tutorDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+
+            return Ok(tutorDto);
         }
 
         [HttpPost]
-        public ActionResult Post(Tutor tutor)
+        public ActionResult<TutorDTO> Post(TutorDTO tutorDto)
         {
-            if (tutor is null)
-                return BadRequest();
+            if (tutorDto is null)
+            {
+                _logger.LogWarning("Dados inválidos.");
+                return BadRequest("Dados inválidos.");
+            }
 
-            _context.Tutores.Add(tutor);
-            _context.SaveChanges();
+            var tutor = TutorDTOMappingExtensions.ToTutor(tutorDto);
 
-            return new CreatedAtRouteResult("ObterTutor", new { id = tutor.Id }, tutor);
+            var tutorCriado = _uof.TutorRepository.Create(tutor);
+            _uof.Commit();
+
+            var novoTutorDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+
+            return new CreatedAtRouteResult("ObterTutor", new { id = novoTutorDto.Id }, novoTutorDto);
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public ActionResult Put(int id, Tutor tutor)
+        public ActionResult<TutorDTO> Put(int id, TutorDTO tutorDto)
         {
-            if (id != tutor.Id)
-                return BadRequest();
+            if (id != tutorDto.Id)
+            {
+                _logger.LogWarning("Dados inválidos.");
+                return BadRequest("Dados inválidos.");
+            }
 
-            _context.Entry(tutor).State = EntityState.Modified;
-            _context.SaveChanges();
+            var tutor = TutorDTOMappingExtensions.ToTutor(tutorDto);
 
-            return Ok(tutor);
+            var tutorAtualizado = _uof.TutorRepository.Update(tutor);
+            _uof.Commit();
+
+            var tutorAtualizadoDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+
+            return Ok(tutorAtualizadoDto);
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public ActionResult Delete(int id)
+        public ActionResult<TutorDTO> Delete(int id)
         {
-            var tutor = _context.Tutores.FirstOrDefault(a => a.Id == id);
+            var tutor = _uof.TutorRepository.Get(t => t.Id == id);
 
             if (tutor is null)
-                return NotFound("Tutor não encontrado.");
+            {
+                _logger.LogWarning($"Tutor com id = {id} não encontrado.");
+                return NotFound($"Tutor com id = {id} não encontrado.");
+            }
 
-            _context.Tutores.Remove(tutor);
-            _context.SaveChanges();
+            var tutorDeletado = _uof.TutorRepository.Delete(tutor);
+            _uof.Commit();
 
-            return Ok(tutor);
+            var tutorDeletadoDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+
+            return Ok(tutorDeletadoDto);
         }
     }
 }

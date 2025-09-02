@@ -2,12 +2,7 @@
 
 namespace ReservasHotelPetAPI.Repositories.Interfaces
 {
-    public interface ITutorRepository
+    public interface ITutorRepository : IRepository<Tutor>
     {
-        IEnumerable<Tutor> GetTutores();
-        Tutor GetTutor(int id);
-        Tutor Create(Tutor tutor);
-        Tutor Update(Tutor tutor);
-        Tutor Delete(int id);
     }
 }

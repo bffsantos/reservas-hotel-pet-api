@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.Filters;
 using ReservasHotelPetAPI.Models;
+using ReservasHotelPetAPI.Repositories.Interfaces;
 using System.Collections;
 
 namespace ReservasHotelPetAPI.Controllers
@@ -11,36 +12,53 @@ namespace ReservasHotelPetAPI.Controllers
     [Route("api/[controller]")]
     public class AnimaisController : ControllerBase
     {
-        private readonly ApiReservasHotelPetContext _context;
-        private readonly ILogger _logger;
+        private readonly IUnitOfWork _uof;
+        private readonly ILogger<AnimaisController> _logger;
 
-        public AnimaisController(ApiReservasHotelPetContext context, ILogger<AnimaisController> logger)
+        public AnimaisController(IUnitOfWork uof, ILogger<AnimaisController> logger)
         {
-            _context = context;
+            _uof = uof;
             _logger = logger;
         }
 
-        [HttpGet]
-        [ServiceFilter(typeof(ApiLoggingFilter))]
-        public async Task<ActionResult<IEnumerable<Animal>>> Get()
+        [HttpGet("tutor/{id}")]
+        public ActionResult<IEnumerable<Animal>> GetAnimaisTutores(int id)
         {
-            _logger.LogInformation("==============GET api/Animais=============");
+            var animal = _uof.AnimalRepository.GetAnimaisPorTutor(id);
 
-            var animais = await _context.Animais.AsNoTracking().ToListAsync();
+            if (animal is null)
+            {
+                _logger.LogWarning($"Tutor com id = {id} não encontrado.");
+                return NotFound($"Tutor com id = {id} não encontrado.");
+            }
+
+            return Ok(animal);
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<Animal>> Get()
+        {
+            var animais = _uof.AnimalRepository.GetAll();
 
             if (animais is null)
+            {
+                _logger.LogWarning("Animais não encontrados.");
                 return NotFound("Animais não encontrados.");
+            }
 
-            return animais;
+            return Ok(animais);
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterAnimal")]
-        public async Task<ActionResult<Animal>> Get(int id)
+        public ActionResult<Animal> Get(int id)
         {
-            var animal = await _context.Animais.FirstOrDefaultAsync(a => a.Id == id);
+            var animal = _uof.AnimalRepository.Get(a => a.Id == id);
 
-            if (animal == null)
+            if (animal is null)
+            {
+                _logger.LogWarning("Animal não encontrado.");
                 return NotFound("Animal não encontrado.");
+            }
 
             return animal;
         }
@@ -49,38 +67,47 @@ namespace ReservasHotelPetAPI.Controllers
         public ActionResult Post(Animal animal)
         {
             if (animal is null)
-                return BadRequest();
+            {
+                _logger.LogWarning("Dados inválidos.");
+                return BadRequest("Dados inválidos.");
+            }
 
-            _context.Animais.Add(animal);
-            _context.SaveChanges();
+            var animalaCriado = _uof.AnimalRepository.Create(animal);
+            _uof.Commit();
 
-            return new CreatedAtRouteResult("ObterAnimal", new { id = animal.Id }, animal);
+            return new CreatedAtRouteResult("ObterAnimal", new { id = animalaCriado.Id }, animalaCriado);
         }
 
         [HttpPut("{id:int:min(1)}")]
         public ActionResult Put(int id, Animal animal)
         {
             if (id != animal.Id)
-                return BadRequest();
+            {
+                _logger.LogWarning("Dados inválidos.");
+                return BadRequest("Dados inválidos.");
+            }
 
-            _context.Entry(animal).State = EntityState.Modified;
-            _context.SaveChanges();
+            var animalAtualizado = _uof.AnimalRepository.Update(animal);
+            _uof.Commit();
 
-            return Ok(animal);
+            return Ok(animalAtualizado);
         }
 
         [HttpDelete("{id:int:min(1)}")]
         public ActionResult Delete(int id)
         {
-            var animal = _context.Animais.FirstOrDefault(a => a.Id == id);
+            var animal = _uof.AnimalRepository.Get(a => a.Id == id);
 
             if (animal is null)
+            {
+                _logger.LogWarning("Animal não encontrado.");
                 return NotFound("Animal não encontrado.");
+            }
 
-            _context.Animais.Remove(animal);
-            _context.SaveChanges();
+            var animalDeletado = _uof.AnimalRepository.Delete(animal);
+            _uof.Commit();
 
-            return Ok(animal);
+            return Ok(animalDeletado);
         }
     }
 }
