@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
+using ReservasHotelPetAPI.DTOs.Mappings;
 using ReservasHotelPetAPI.Extensions;
 using ReservasHotelPetAPI.Filters;
 using ReservasHotelPetAPI.Logging;
@@ -42,6 +43,8 @@ builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderCon
 {
     LogLevel = LogLevel.Information
 }));
+
+builder.Services.AddAutoMapper(cfg => { }, typeof(ModelsToDTOMappingProfile));
 
 var app = builder.Build();
 

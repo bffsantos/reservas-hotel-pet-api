@@ -7,7 +7,6 @@ namespace ReservasHotelPetAPI.Models
     [Table("Animais")]
     public class Animal
     {
-        [Key]
         public int Id { get; set; }
         [Required]
         [StringLength(80)]

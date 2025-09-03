@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
+using ReservasHotelPetAPI.DTOs;
 using ReservasHotelPetAPI.Filters;
 using ReservasHotelPetAPI.Models;
 using ReservasHotelPetAPI.Repositories.Interfaces;
@@ -22,7 +23,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet("tutor/{id}")]
-        public ActionResult<IEnumerable<Animal>> GetAnimaisTutores(int id)
+        public ActionResult<IEnumerable<AnimalDTO>> GetAnimaisTutores(int id)
         {
             var animal = _uof.AnimalRepository.GetAnimaisPorTutor(id);
 
@@ -36,7 +37,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Animal>> Get()
+        public ActionResult<IEnumerable<AnimalDTO>> Get()
         {
             var animais = _uof.AnimalRepository.GetAll();
 
@@ -50,7 +51,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterAnimal")]
-        public ActionResult<Animal> Get(int id)
+        public ActionResult<AnimalDTO> Get(int id)
         {
             var animal = _uof.AnimalRepository.Get(a => a.Id == id);
 
@@ -64,37 +65,37 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Animal animal)
+        public ActionResult<AnimalDTO> Post(AnimalDTO animalDto)
         {
-            if (animal is null)
+            if (animalDto is null)
             {
                 _logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
-            var animalaCriado = _uof.AnimalRepository.Create(animal);
+            var animalaCriado = _uof.AnimalRepository.Create(animalDto);
             _uof.Commit();
 
             return new CreatedAtRouteResult("ObterAnimal", new { id = animalaCriado.Id }, animalaCriado);
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public ActionResult Put(int id, Animal animal)
+        public ActionResult<AnimalDTO Put(int id, AnimalDTO animalDto)
         {
-            if (id != animal.Id)
+            if (id != animalDto.Id)
             {
                 _logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
-            var animalAtualizado = _uof.AnimalRepository.Update(animal);
+            var animalAtualizado = _uof.AnimalRepository.Update(animalDto);
             _uof.Commit();
 
             return Ok(animalAtualizado);
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public ActionResult Delete(int id)
+        public ActionResult<AnimalDTO> Delete(int id)
         {
             var animal = _uof.AnimalRepository.Get(a => a.Id == id);
 
