@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs;
@@ -14,26 +15,30 @@ namespace ReservasHotelPetAPI.Controllers
     public class AnimaisController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
+        private readonly IMapper _mapper;
         private readonly ILogger<AnimaisController> _logger;
 
-        public AnimaisController(IUnitOfWork uof, ILogger<AnimaisController> logger)
+        public AnimaisController(IUnitOfWork uof, ILogger<AnimaisController> logger, IMapper mapper)
         {
             _uof = uof;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("tutor/{id}")]
         public ActionResult<IEnumerable<AnimalDTO>> GetAnimaisTutores(int id)
         {
-            var animal = _uof.AnimalRepository.GetAnimaisPorTutor(id);
+            var animais = _uof.AnimalRepository.GetAnimaisPorTutor(id);
 
-            if (animal is null)
+            if (animais is null)
             {
                 _logger.LogWarning($"Tutor com id = {id} não encontrado.");
                 return NotFound($"Tutor com id = {id} não encontrado.");
             }
 
-            return Ok(animal);
+            var animaisDto = _mapper.Map<IEnumerable<AnimalDTO>>(animais);
+
+            return Ok(animaisDto);
         }
 
         [HttpGet]
@@ -47,7 +52,9 @@ namespace ReservasHotelPetAPI.Controllers
                 return NotFound("Animais não encontrados.");
             }
 
-            return Ok(animais);
+            var animaisDto = _mapper.Map<IEnumerable<AnimalDTO>>(animais);
+
+            return Ok(animaisDto);
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterAnimal")]
@@ -61,7 +68,9 @@ namespace ReservasHotelPetAPI.Controllers
                 return NotFound("Animal não encontrado.");
             }
 
-            return animal;
+            var animalDto = _mapper.Map<AnimalDTO>(animal);
+
+            return animalDto;
         }
 
         [HttpPost]
@@ -73,14 +82,18 @@ namespace ReservasHotelPetAPI.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
-            var animalaCriado = _uof.AnimalRepository.Create(animalDto);
+            var animal = _mapper.Map<Animal>(animalDto);
+
+            var animalCriado = _uof.AnimalRepository.Create(animal);
             _uof.Commit();
 
-            return new CreatedAtRouteResult("ObterAnimal", new { id = animalaCriado.Id }, animalaCriado);
+            var animalCriadoDto = _mapper.Map<AnimalDTO>(animalCriado);
+
+            return new CreatedAtRouteResult("ObterAnimal", new { id = animalCriadoDto.Id }, animalCriadoDto);
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public ActionResult<AnimalDTO Put(int id, AnimalDTO animalDto)
+        public ActionResult<AnimalDTO> Put(int id, AnimalDTO animalDto)
         {
             if (id != animalDto.Id)
             {
@@ -88,10 +101,14 @@ namespace ReservasHotelPetAPI.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
-            var animalAtualizado = _uof.AnimalRepository.Update(animalDto);
+            var animal = _mapper.Map<Animal>(animalDto);
+
+            var animalAtualizado = _uof.AnimalRepository.Update(animal);
             _uof.Commit();
 
-            return Ok(animalAtualizado);
+            var animalAtualizadoDto = _mapper.Map<AnimalDTO>(animalAtualizado);
+
+            return Ok(animalAtualizadoDto);
         }
 
         [HttpDelete("{id:int:min(1)}")]
@@ -108,6 +125,7 @@ namespace ReservasHotelPetAPI.Controllers
             var animalDeletado = _uof.AnimalRepository.Delete(animal);
             _uof.Commit();
 
+            var animalDeletadoDto = _mapper.Map<AnimalDTO>(animalDeletado);
             return Ok(animalDeletado);
         }
     }
