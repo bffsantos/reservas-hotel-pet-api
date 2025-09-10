@@ -9,6 +9,8 @@ namespace ReservasHotelPetAPI.DTOs.Mappings
         {
             CreateMap<Animal, AnimalDTO>().ReverseMap();
             CreateMap<Tutor, TutorDTO>().ReverseMap();
+            CreateMap<Animal, AnimalDTOUpdateRequset>().ReverseMap();
+            CreateMap<Animal, AnimalDTOUpdateResponse>().ReverseMap();
         }
     }
 }
