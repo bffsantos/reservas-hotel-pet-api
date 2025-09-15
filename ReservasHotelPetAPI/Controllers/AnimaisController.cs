@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using AspNetCoreGeneratedDocument;
+using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs;
 using ReservasHotelPetAPI.Filters;
 using ReservasHotelPetAPI.Models;
+using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 using System.Collections;
 
@@ -35,6 +38,16 @@ namespace ReservasHotelPetAPI.Controllers
                 _logger.LogWarning($"Tutor com id = {id} não encontrado.");
                 return NotFound($"Tutor com id = {id} não encontrado.");
             }
+
+            var animaisDto = _mapper.Map<IEnumerable<AnimalDTO>>(animais);
+
+            return Ok(animaisDto);
+        }
+
+        [HttpGet("pagination")]
+        public ActionResult<IEnumerable<AnimalDTO>> Get([FromQuery] AnimaisParameters animaisParameters)
+        {
+            var animais = _uof.AnimalRepository.GetAnimais(animaisParameters);
 
             var animaisDto = _mapper.Map<IEnumerable<AnimalDTO>>(animais);
 
@@ -90,6 +103,32 @@ namespace ReservasHotelPetAPI.Controllers
             var animalCriadoDto = _mapper.Map<AnimalDTO>(animalCriado);
 
             return new CreatedAtRouteResult("ObterAnimal", new { id = animalCriadoDto.Id }, animalCriadoDto);
+        }
+
+        [HttpPatch("{id}/UpdatePartial")]
+        public ActionResult<AnimalDTOUpdateResponse> Patch(int id, JsonPatchDocument<AnimalDTOUpdateRequset> patchAnimalDTO)
+        {
+            if(patchAnimalDTO is null || id <= 0)
+                return BadRequest();
+
+            var animal = _uof.AnimalRepository.Get(a => a.Id == id);
+
+            if (animal is null)
+                return NotFound();
+
+            var animalUpdateRequest = _mapper.Map<AnimalDTOUpdateRequset>(animal);
+
+            patchAnimalDTO.ApplyTo(animalUpdateRequest, ModelState);
+
+            if (!ModelState.IsValid || !TryValidateModel(animalUpdateRequest))
+                return BadRequest(ModelState);
+
+            _mapper.Map(animalUpdateRequest, animal);
+
+            _uof.AnimalRepository.Update(animal);
+            _uof.Commit();
+
+            return Ok(_mapper.Map<AnimalDTOUpdateResponse>(animal));
         }
 
         [HttpPut("{id:int:min(1)}")]
