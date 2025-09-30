@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs;
 using ReservasHotelPetAPI.DTOs.Mappings;
 using ReservasHotelPetAPI.Models;
+using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,12 +18,14 @@ namespace ReservasHotelPetAPI.Controllers
     {
         //private readonly IRepository<Tutor> _repository;
         private readonly IUnitOfWork _uof;
+        private readonly IMapper _mapper;
         private readonly ILogger<TutoresController> _logger;
 
-        public TutoresController(IUnitOfWork uof, ILogger<TutoresController> logger)
+        public TutoresController(IUnitOfWork uof, ILogger<TutoresController> logger, IMapper mapper)
         {
             _uof = uof;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -34,7 +39,29 @@ namespace ReservasHotelPetAPI.Controllers
                 return NotFound("Não existem tutores.");
             }
 
-            var tutoresDto = TutorDTOMappingExtensions.ToTutorDTOList(tutores);
+            var tutoresDto = _mapper.Map<IEnumerable<TutorDTO>>(tutores);
+
+            return Ok(tutoresDto);
+        }
+
+        [HttpGet("pagination")]
+        public ActionResult<IEnumerable<TutorDTO>> Get([FromQuery] TutoresParameters tutoresParameters)
+        {
+            var tutores = _uof.TutorRepository.GetTutores(tutoresParameters);
+
+            var metadata = new
+            {
+                tutores.TotalCount,
+                tutores.PageSize,
+                tutores.CurrentPage,
+                tutores.TotalPages,
+                tutores.HasNext,
+                tutores.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            var tutoresDto = _mapper.Map<IEnumerable<TutorDTO>>(tutores);
 
             return Ok(tutoresDto);
         }
@@ -50,7 +77,7 @@ namespace ReservasHotelPetAPI.Controllers
                 return NotFound($"Tutor com id = {id} não encontrado.");
             }
 
-            var tutorDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+            var tutorDto = _mapper.Map<TutorDTO>(tutor);
 
             return Ok(tutorDto);
         }
@@ -64,12 +91,12 @@ namespace ReservasHotelPetAPI.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
-            var tutor = TutorDTOMappingExtensions.ToTutor(tutorDto);
+            var tutor = _mapper.Map<Tutor>(tutorDto);
 
             var tutorCriado = _uof.TutorRepository.Create(tutor);
             _uof.Commit();
 
-            var novoTutorDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+            var novoTutorDto = _mapper.Map<TutorDTO>(tutorCriado);
 
             return new CreatedAtRouteResult("ObterTutor", new { id = novoTutorDto.Id }, novoTutorDto);
         }
@@ -83,12 +110,12 @@ namespace ReservasHotelPetAPI.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
-            var tutor = TutorDTOMappingExtensions.ToTutor(tutorDto);
+            var tutor = _mapper.Map<Tutor>(tutorDto);
 
             var tutorAtualizado = _uof.TutorRepository.Update(tutor);
             _uof.Commit();
 
-            var tutorAtualizadoDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+            var tutorAtualizadoDto = _mapper.Map<TutorDTO>(tutorAtualizado);
 
             return Ok(tutorAtualizadoDto);
         }
@@ -107,7 +134,7 @@ namespace ReservasHotelPetAPI.Controllers
             var tutorDeletado = _uof.TutorRepository.Delete(tutor);
             _uof.Commit();
 
-            var tutorDeletadoDto = TutorDTOMappingExtensions.ToTutorDTO(tutor);
+            var tutorDeletadoDto = _mapper.Map<TutorDTO>(tutorDeletado);
 
             return Ok(tutorDeletadoDto);
         }

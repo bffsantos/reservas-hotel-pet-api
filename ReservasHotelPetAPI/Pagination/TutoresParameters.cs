@@ -1,6 +1,6 @@
 ﻿namespace ReservasHotelPetAPI.Pagination
 {
-    public class AnimaisParameters : QueryStringParameters
+    public class TutoresParameters : QueryStringParameters
     {
     }
 }

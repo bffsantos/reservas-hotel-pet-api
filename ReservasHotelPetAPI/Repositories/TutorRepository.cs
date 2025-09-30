@@ -1,5 +1,6 @@
 ﻿using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.Models;
+using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 
 namespace ReservasHotelPetAPI.Repositories
@@ -53,6 +54,14 @@ namespace ReservasHotelPetAPI.Repositories
             _context.SaveChanges();
 
             return tutor;
+        }
+
+        public PagedList<Tutor> GetTutores(TutoresParameters tutoresParameters)
+        {
+            var tutores = GetAll().OrderBy(t => t.Id).AsQueryable();
+            var tutoresOrdenados = PagedList<Tutor>.ToPagedList(tutores, tutoresParameters.PageNumber, tutoresParameters.PageSize);
+
+            return tutoresOrdenados;
         }
     }
 }

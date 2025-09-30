@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs;
 using ReservasHotelPetAPI.Filters;
@@ -48,6 +49,18 @@ namespace ReservasHotelPetAPI.Controllers
         public ActionResult<IEnumerable<AnimalDTO>> Get([FromQuery] AnimaisParameters animaisParameters)
         {
             var animais = _uof.AnimalRepository.GetAnimais(animaisParameters);
+
+            var metadata = new
+            {
+                animais.TotalCount,
+                animais.PageSize,
+                animais.CurrentPage,
+                animais.TotalPages,
+                animais.HasNext,
+                animais.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             var animaisDto = _mapper.Map<IEnumerable<AnimalDTO>>(animais);
 

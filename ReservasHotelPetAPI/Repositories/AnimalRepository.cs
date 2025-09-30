@@ -12,11 +12,12 @@ namespace ReservasHotelPetAPI.Repositories
         {
         }
 
-        public IEnumerable<Animal> GetAnimais(AnimaisParameters animaisParams)
+        public PagedList<Animal> GetAnimais(AnimaisParameters animaisParameters)
         {
-            return GetAll().OrderBy(a => a.Nome)
-                .Skip((animaisParams.PageNumber - 1) * animaisParams.PageSize)
-                .Take(animaisParams.PageSize).ToList();
+            var animais = GetAll().OrderBy(a => a.Id).AsQueryable();
+            var animaisOrdenados = PagedList<Animal>.ToPagedList(animais, animaisParameters.PageNumber, animaisParameters.PageSize);
+
+            return animaisOrdenados;
         }
 
         public IEnumerable<Animal> GetAnimaisPorTutor(int tutorId)
