@@ -7,6 +7,7 @@ namespace ReservasHotelPetAPI.Repositories.Interfaces
     public interface IAnimalRepository : IRepository<Animal>
     {
         PagedList<Animal> GetAnimais(AnimaisParameters animaisParams);
+        PagedList<Animal> GetAnimaisFiltroIdade(AnimaisFiltroIdade animaisFiltroIdadeParams);
         IEnumerable<Animal> GetAnimaisPorTutor(int tutorId);
     }
 }

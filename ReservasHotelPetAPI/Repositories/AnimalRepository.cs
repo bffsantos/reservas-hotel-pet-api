@@ -20,6 +20,29 @@ namespace ReservasHotelPetAPI.Repositories
             return animaisOrdenados;
         }
 
+        public PagedList<Animal> GetAnimaisFiltroIdade(AnimaisFiltroIdade animaisFiltroIdadeParams)
+        {
+            var animais = GetAll().AsQueryable();
+
+            if (animaisFiltroIdadeParams.Idade.HasValue && !string.IsNullOrEmpty(animaisFiltroIdadeParams.IdadeCriterio))
+            {
+                if (animaisFiltroIdadeParams.IdadeCriterio.Equals("maior", StringComparison.OrdinalIgnoreCase))
+                {
+                    animais = animais.Where(a => a.Idade > animaisFiltroIdadeParams.Idade.Value).OrderBy(a => a.Idade);
+                }
+                else if (animaisFiltroIdadeParams.IdadeCriterio.Equals("menor", StringComparison.OrdinalIgnoreCase))
+                {
+                    animais = animais.Where(a => a.Idade < animaisFiltroIdadeParams.Idade.Value).OrderBy(a => a.Idade);
+                }
+                else if (animaisFiltroIdadeParams.IdadeCriterio.Equals("igual", StringComparison.OrdinalIgnoreCase))
+                {
+                    animais = animais.Where(a => a.Idade == animaisFiltroIdadeParams.Idade.Value).OrderBy(a => a.Idade);
+                }
+            }
+            var animaisFiltrados = PagedList<Animal>.ToPagedList(animais, animaisFiltroIdadeParams.PageNumber, animaisFiltroIdadeParams.PageSize);
+            return animaisFiltrados;
+        }
+
         public IEnumerable<Animal> GetAnimaisPorTutor(int tutorId)
         {
             return GetAll().Where(a => a.TutorId == tutorId);
