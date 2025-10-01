@@ -11,6 +11,7 @@ using ReservasHotelPetAPI.Models;
 using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ReservasHotelPetAPI.Controllers
 {
@@ -50,6 +51,19 @@ namespace ReservasHotelPetAPI.Controllers
         {
             var animais = _uof.AnimalRepository.GetAnimais(animaisParameters);
 
+            return ObterAnimais(animais);
+        }
+
+        [HttpGet("filtro/idade/pagination")]
+        public ActionResult<IEnumerable<AnimalDTO>> GetAnimaisFiltroIdade([FromQuery] AnimaisFiltroIdade animaisFiltroParams)
+        {
+            var animais = _uof.AnimalRepository.GetAnimaisFiltroIdade(animaisFiltroParams);
+
+            return ObterAnimais(animais);
+        }
+
+        public ActionResult<IEnumerable<AnimalDTO>> ObterAnimais(PagedList<Animal> animais) 
+        {
             var metadata = new
             {
                 animais.TotalCount,
