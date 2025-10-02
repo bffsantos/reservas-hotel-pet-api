@@ -62,7 +62,7 @@ namespace ReservasHotelPetAPI.Controllers
             return ObterAnimais(animais);
         }
 
-        public ActionResult<IEnumerable<AnimalDTO>> ObterAnimais(PagedList<Animal> animais) 
+        private ActionResult<IEnumerable<AnimalDTO>> ObterAnimais(PagedList<Animal> animais) 
         {
             var metadata = new
             {

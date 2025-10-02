@@ -2,6 +2,7 @@
 using ReservasHotelPetAPI.Models;
 using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
+using System.Runtime.InteropServices;
 
 namespace ReservasHotelPetAPI.Repositories
 {
@@ -62,6 +63,20 @@ namespace ReservasHotelPetAPI.Repositories
             var tutoresOrdenados = PagedList<Tutor>.ToPagedList(tutores, tutoresParameters.PageNumber, tutoresParameters.PageSize);
 
             return tutoresOrdenados;
+        }
+
+        public PagedList<Tutor> GetTutoresFIltroNome(TutoresFiltroNome tutorFiltroParams)
+        {
+            var tutores = GetAll().AsQueryable();
+
+            if (!string.IsNullOrEmpty(tutorFiltroParams.Nome))
+            {
+                tutores = tutores.Where(t => t.Nome.Contains(tutorFiltroParams.Nome));
+            }
+
+            var tutoresFiltrados = PagedList<Tutor>.ToPagedList(tutores, tutorFiltroParams.PageNumber, tutorFiltroParams.PageSize);
+
+            return tutoresFiltrados;
         }
     }
 }

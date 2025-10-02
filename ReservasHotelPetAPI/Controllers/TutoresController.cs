@@ -49,6 +49,19 @@ namespace ReservasHotelPetAPI.Controllers
         {
             var tutores = _uof.TutorRepository.GetTutores(tutoresParameters);
 
+            return ObterTutores(tutores);
+        }
+
+        [HttpGet("filtro/nome/pagination")]
+        public ActionResult<IEnumerable<TutorDTO>> GetTutoresFiltroNome([FromQuery] TutoresFiltroNome tutoresFiltroNome)
+        {
+            var tutoresFiltrados = _uof.TutorRepository.GetTutoresFIltroNome(tutoresFiltroNome);
+
+            return ObterTutores(tutoresFiltrados);
+        }
+
+        private ActionResult<IEnumerable<TutorDTO>> ObterTutores(PagedList<Tutor> tutores)
+        {
             var metadata = new
             {
                 tutores.TotalCount,
