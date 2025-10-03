@@ -2,7 +2,7 @@
 using ReservasHotelPetAPI.Models;
 using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
-using System.Runtime.InteropServices;
+using X.PagedList;
 
 namespace ReservasHotelPetAPI.Repositories
 {
@@ -57,24 +57,29 @@ namespace ReservasHotelPetAPI.Repositories
             return tutor;
         }
 
-        public PagedList<Tutor> GetTutores(TutoresParameters tutoresParameters)
+        public async Task<IPagedList<Tutor>> GetTutoresAsync(TutoresParameters tutoresParams)
         {
-            var tutores = GetAll().OrderBy(t => t.Id).AsQueryable();
-            var tutoresOrdenados = PagedList<Tutor>.ToPagedList(tutores, tutoresParameters.PageNumber, tutoresParameters.PageSize);
+            var tutores = await GetAllAsync();
 
-            return tutoresOrdenados;
+            var tutoresOrdenados = tutores.OrderBy(t => t.Id).AsQueryable();
+
+            //var resultado = PagedList<Tutor>.ToPagedList(tutoresOrdenados, tutoresParams.PageNumber, tutoresParams.PageSize);
+            var resultado = await tutoresOrdenados.ToPagedListAsync(tutoresParams.PageNumber, tutoresParams.PageSize);
+
+            return resultado;
         }
 
-        public PagedList<Tutor> GetTutoresFIltroNome(TutoresFiltroNome tutorFiltroParams)
+        public async Task<IPagedList<Tutor>> GetTutoresFiltroNomeAsync(TutoresFiltroNome tutoresFiltroParams)
         {
-            var tutores = GetAll().AsQueryable();
+            var tutores = await GetAllAsync();
 
-            if (!string.IsNullOrEmpty(tutorFiltroParams.Nome))
+            if (!string.IsNullOrEmpty(tutoresFiltroParams.Nome))
             {
-                tutores = tutores.Where(t => t.Nome.Contains(tutorFiltroParams.Nome));
+                tutores = tutores.Where(t => t.Nome.Contains(tutoresFiltroParams.Nome));
             }
 
-            var tutoresFiltrados = PagedList<Tutor>.ToPagedList(tutores, tutorFiltroParams.PageNumber, tutorFiltroParams.PageSize);
+            //var tutoresFiltrados = PagedList<Tutor>.ToPagedList(tutores.AsQueryable(), tutorFiltroParams.PageNumber, tutorFiltroParams.PageSize);
+            var tutoresFiltrados = await tutores.ToPagedListAsync(tutoresFiltroParams.PageNumber, tutoresFiltroParams.PageSize);
 
             return tutoresFiltrados;
         }

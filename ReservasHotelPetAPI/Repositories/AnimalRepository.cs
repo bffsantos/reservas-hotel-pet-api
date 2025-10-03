@@ -3,6 +3,7 @@ using ReservasHotelPetAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 using ReservasHotelPetAPI.Pagination;
+using X.PagedList;
 
 namespace ReservasHotelPetAPI.Repositories
 {
@@ -12,17 +13,20 @@ namespace ReservasHotelPetAPI.Repositories
         {
         }
 
-        public PagedList<Animal> GetAnimais(AnimaisParameters animaisParameters)
+        public async Task<IPagedList<Animal>> GetAnimaisAsync(AnimaisParameters animaisParameters)
         {
-            var animais = GetAll().OrderBy(a => a.Id).AsQueryable();
-            var animaisOrdenados = PagedList<Animal>.ToPagedList(animais, animaisParameters.PageNumber, animaisParameters.PageSize);
+            var animais = await GetAllAsync();
 
-            return animaisOrdenados;
+            var animaisOrdenados = animais.OrderBy(a => a.Id).AsQueryable();
+
+            var resultado = await animaisOrdenados.ToPagedListAsync(animaisParameters.PageNumber, animaisParameters.PageSize);
+
+            return resultado;
         }
 
-        public PagedList<Animal> GetAnimaisFiltroIdade(AnimaisFiltroIdade animaisFiltroIdadeParams)
+        public async Task<IPagedList<Animal>> GetAnimaisFiltroIdadeAsync(AnimaisFiltroIdade animaisFiltroIdadeParams)
         {
-            var animais = GetAll().AsQueryable();
+            var animais = await GetAllAsync();
 
             if (animaisFiltroIdadeParams.Idade.HasValue && !string.IsNullOrEmpty(animaisFiltroIdadeParams.IdadeCriterio))
             {
@@ -39,13 +43,18 @@ namespace ReservasHotelPetAPI.Repositories
                     animais = animais.Where(a => a.Idade == animaisFiltroIdadeParams.Idade.Value).OrderBy(a => a.Idade);
                 }
             }
-            var animaisFiltrados = PagedList<Animal>.ToPagedList(animais, animaisFiltroIdadeParams.PageNumber, animaisFiltroIdadeParams.PageSize);
+            var animaisFiltrados = await animais.ToPagedListAsync(animaisFiltroIdadeParams.PageNumber, animaisFiltroIdadeParams.PageSize);
+
             return animaisFiltrados;
         }
 
-        public IEnumerable<Animal> GetAnimaisPorTutor(int tutorId)
+        public async Task<IEnumerable<Animal>> GetAnimaisPorTutorAsync(int tutorId)
         {
-            return GetAll().Where(a => a.TutorId == tutorId);
+            var animais = await GetAllAsync();
+
+            var animaisTutores = animais.Where(a => a.TutorId == tutorId);
+
+            return animaisTutores;
         }
 
     }

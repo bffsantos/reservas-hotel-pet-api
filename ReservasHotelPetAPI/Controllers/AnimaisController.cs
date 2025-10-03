@@ -12,6 +12,8 @@ using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 using System.Collections;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using X.PagedList;
 
 namespace ReservasHotelPetAPI.Controllers
 {
@@ -31,9 +33,9 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet("tutor/{id}")]
-        public ActionResult<IEnumerable<AnimalDTO>> GetAnimaisTutores(int id)
+        public async Task<ActionResult<IEnumerable<AnimalDTO>>> GetAnimaisTutores(int id)
         {
-            var animais = _uof.AnimalRepository.GetAnimaisPorTutor(id);
+            var animais = await _uof.AnimalRepository.GetAnimaisPorTutorAsync(id);
 
             if (animais is null)
             {
@@ -47,31 +49,31 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet("pagination")]
-        public ActionResult<IEnumerable<AnimalDTO>> Get([FromQuery] AnimaisParameters animaisParameters)
+        public async Task<ActionResult<IEnumerable<AnimalDTO>>> Get([FromQuery] AnimaisParameters animaisParameters)
         {
-            var animais = _uof.AnimalRepository.GetAnimais(animaisParameters);
+            var animais = await _uof.AnimalRepository.GetAnimaisAsync(animaisParameters);
 
             return ObterAnimais(animais);
         }
 
         [HttpGet("filtro/idade/pagination")]
-        public ActionResult<IEnumerable<AnimalDTO>> GetAnimaisFiltroIdade([FromQuery] AnimaisFiltroIdade animaisFiltroParams)
+        public async Task<ActionResult<IEnumerable<AnimalDTO>>> GetAnimaisFiltroIdade([FromQuery] AnimaisFiltroIdade animaisFiltroParams)
         {
-            var animais = _uof.AnimalRepository.GetAnimaisFiltroIdade(animaisFiltroParams);
+            var animais = await _uof.AnimalRepository.GetAnimaisFiltroIdadeAsync(animaisFiltroParams);
 
             return ObterAnimais(animais);
         }
 
-        private ActionResult<IEnumerable<AnimalDTO>> ObterAnimais(PagedList<Animal> animais) 
+        private ActionResult<IEnumerable<AnimalDTO>> ObterAnimais(IPagedList<Animal> animais) 
         {
             var metadata = new
             {
-                animais.TotalCount,
+                animais.Count,
                 animais.PageSize,
-                animais.CurrentPage,
-                animais.TotalPages,
-                animais.HasNext,
-                animais.HasPrevious
+                animais.PageCount,
+                animais.TotalItemCount,
+                animais.HasNextPage,
+                animais.HasPreviousPage
             };
 
             Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
@@ -82,9 +84,9 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<AnimalDTO>> Get()
+        public async Task<ActionResult<IEnumerable<AnimalDTO>>> Get()
         {
-            var animais = _uof.AnimalRepository.GetAll();
+            var animais = await _uof.AnimalRepository.GetAllAsync();
 
             if (animais is null)
             {
@@ -98,9 +100,9 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterAnimal")]
-        public ActionResult<AnimalDTO> Get(int id)
+        public async Task<ActionResult<AnimalDTO>> Get(int id)
         {
-            var animal = _uof.AnimalRepository.Get(a => a.Id == id);
+            var animal = await _uof.AnimalRepository.GetAsync(a => a.Id == id);
 
             if (animal is null)
             {
@@ -114,7 +116,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<AnimalDTO> Post(AnimalDTO animalDto)
+        public async Task<ActionResult<AnimalDTO>> Post(AnimalDTO animalDto)
         {
             if (animalDto is null)
             {
@@ -125,7 +127,7 @@ namespace ReservasHotelPetAPI.Controllers
             var animal = _mapper.Map<Animal>(animalDto);
 
             var animalCriado = _uof.AnimalRepository.Create(animal);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var animalCriadoDto = _mapper.Map<AnimalDTO>(animalCriado);
 
@@ -133,12 +135,12 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpPatch("{id}/UpdatePartial")]
-        public ActionResult<AnimalDTOUpdateResponse> Patch(int id, JsonPatchDocument<AnimalDTOUpdateRequset> patchAnimalDTO)
+        public async Task<ActionResult<AnimalDTOUpdateResponse>> Patch(int id, JsonPatchDocument<AnimalDTOUpdateRequset> patchAnimalDTO)
         {
             if(patchAnimalDTO is null || id <= 0)
                 return BadRequest();
 
-            var animal = _uof.AnimalRepository.Get(a => a.Id == id);
+            var animal = await _uof.AnimalRepository.GetAsync(a => a.Id == id);
 
             if (animal is null)
                 return NotFound();
@@ -153,13 +155,13 @@ namespace ReservasHotelPetAPI.Controllers
             _mapper.Map(animalUpdateRequest, animal);
 
             _uof.AnimalRepository.Update(animal);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             return Ok(_mapper.Map<AnimalDTOUpdateResponse>(animal));
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public ActionResult<AnimalDTO> Put(int id, AnimalDTO animalDto)
+        public async Task<ActionResult<AnimalDTO>> Put(int id, AnimalDTO animalDto)
         {
             if (id != animalDto.Id)
             {
@@ -170,7 +172,7 @@ namespace ReservasHotelPetAPI.Controllers
             var animal = _mapper.Map<Animal>(animalDto);
 
             var animalAtualizado = _uof.AnimalRepository.Update(animal);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var animalAtualizadoDto = _mapper.Map<AnimalDTO>(animalAtualizado);
 
@@ -178,9 +180,9 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public ActionResult<AnimalDTO> Delete(int id)
+        public async Task<ActionResult<AnimalDTO>> Delete(int id)
         {
-            var animal = _uof.AnimalRepository.Get(a => a.Id == id);
+            var animal = await _uof.AnimalRepository.GetAsync(a => a.Id == id);
 
             if (animal is null)
             {
@@ -189,7 +191,7 @@ namespace ReservasHotelPetAPI.Controllers
             }
 
             var animalDeletado = _uof.AnimalRepository.Delete(animal);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var animalDeletadoDto = _mapper.Map<AnimalDTO>(animalDeletado);
             return Ok(animalDeletado);

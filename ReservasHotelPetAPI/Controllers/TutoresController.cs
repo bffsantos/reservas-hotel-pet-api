@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using ReservasHotelPetAPI.Models;
 using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using X.PagedList;
 
 namespace ReservasHotelPetAPI.Controllers
 {
@@ -29,9 +31,10 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<TutorDTO>> Get()
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<TutorDTO>>> Get()
         {
-            var tutores = _uof.TutorRepository.GetAll();
+            var tutores = await _uof.TutorRepository.GetAllAsync();
 
             if(tutores is null)
             {
@@ -45,31 +48,31 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet("pagination")]
-        public ActionResult<IEnumerable<TutorDTO>> Get([FromQuery] TutoresParameters tutoresParameters)
+        public async Task<ActionResult<IEnumerable<TutorDTO>>> Get([FromQuery] TutoresParameters tutoresParameters)
         {
-            var tutores = _uof.TutorRepository.GetTutores(tutoresParameters);
+            var tutores = await _uof.TutorRepository.GetTutoresAsync(tutoresParameters);
 
             return ObterTutores(tutores);
         }
 
         [HttpGet("filtro/nome/pagination")]
-        public ActionResult<IEnumerable<TutorDTO>> GetTutoresFiltroNome([FromQuery] TutoresFiltroNome tutoresFiltroNome)
+        public async Task<ActionResult<IEnumerable<TutorDTO>>> GetTutoresFiltroNomeAsync([FromQuery] TutoresFiltroNome tutoresFiltroNome)
         {
-            var tutoresFiltrados = _uof.TutorRepository.GetTutoresFIltroNome(tutoresFiltroNome);
+            var tutoresFiltrados = await _uof.TutorRepository.GetTutoresFiltroNomeAsync(tutoresFiltroNome);
 
             return ObterTutores(tutoresFiltrados);
         }
 
-        private ActionResult<IEnumerable<TutorDTO>> ObterTutores(PagedList<Tutor> tutores)
+        private ActionResult<IEnumerable<TutorDTO>> ObterTutores(IPagedList<Tutor> tutores)
         {
             var metadata = new
             {
-                tutores.TotalCount,
+                tutores.Count,
                 tutores.PageSize,
-                tutores.CurrentPage,
-                tutores.TotalPages,
-                tutores.HasNext,
-                tutores.HasPrevious
+                tutores.PageCount,
+                tutores.TotalItemCount,
+                tutores.HasNextPage,
+                tutores.HasPreviousPage
             };
 
             Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
@@ -80,9 +83,9 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterTutor")]
-        public ActionResult<TutorDTO> Get(int id)
+        public async Task<ActionResult<TutorDTO>> Get(int id)
         {
-            var tutor = _uof.TutorRepository.Get(t => t.Id == id);
+            var tutor = await _uof.TutorRepository.GetAsync(t => t.Id == id);
 
             if (tutor is null)
             {
@@ -96,7 +99,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<TutorDTO> Post(TutorDTO tutorDto)
+        public async Task<ActionResult<TutorDTO>> Post(TutorDTO tutorDto)
         {
             if (tutorDto is null)
             {
@@ -107,7 +110,7 @@ namespace ReservasHotelPetAPI.Controllers
             var tutor = _mapper.Map<Tutor>(tutorDto);
 
             var tutorCriado = _uof.TutorRepository.Create(tutor);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var novoTutorDto = _mapper.Map<TutorDTO>(tutorCriado);
 
@@ -115,7 +118,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public ActionResult<TutorDTO> Put(int id, TutorDTO tutorDto)
+        public async Task<ActionResult<TutorDTO>> Put(int id, TutorDTO tutorDto)
         {
             if (id != tutorDto.Id)
             {
@@ -126,7 +129,7 @@ namespace ReservasHotelPetAPI.Controllers
             var tutor = _mapper.Map<Tutor>(tutorDto);
 
             var tutorAtualizado = _uof.TutorRepository.Update(tutor);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var tutorAtualizadoDto = _mapper.Map<TutorDTO>(tutorAtualizado);
 
@@ -134,9 +137,9 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public ActionResult<TutorDTO> Delete(int id)
+        public async Task<ActionResult<TutorDTO>> Delete(int id)
         {
-            var tutor = _uof.TutorRepository.Get(t => t.Id == id);
+            var tutor = await _uof.TutorRepository.GetAsync(t => t.Id == id);
 
             if (tutor is null)
             {
@@ -145,7 +148,7 @@ namespace ReservasHotelPetAPI.Controllers
             }
 
             var tutorDeletado = _uof.TutorRepository.Delete(tutor);
-            _uof.Commit();
+            await _uof.CommitAsync();
 
             var tutorDeletadoDto = _mapper.Map<TutorDTO>(tutorDeletado);
 

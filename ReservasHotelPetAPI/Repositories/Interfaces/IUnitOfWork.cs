@@ -4,7 +4,7 @@
     {
         IAnimalRepository AnimalRepository { get; }
         ITutorRepository TutorRepository { get; }
-        void Commit();
+        Task CommitAsync();
 
     }
 }
