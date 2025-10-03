@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs.Mappings;
@@ -26,6 +27,9 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApiReservasHotelPetContext>()
+                .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthentication("Bearer").AddJwtBearer();

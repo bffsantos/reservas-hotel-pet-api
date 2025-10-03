@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Models;
 
 namespace ReservasHotelPetAPI.Context
 {
-    public class ApiReservasHotelPetContext : DbContext
+    public class ApiReservasHotelPetContext : IdentityDbContext
     {
         public ApiReservasHotelPetContext(DbContextOptions<ApiReservasHotelPetContext> options) : base ( options )
         {
