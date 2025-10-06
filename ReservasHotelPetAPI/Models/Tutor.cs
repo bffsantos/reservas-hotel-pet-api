@@ -51,11 +51,11 @@ namespace ReservasHotelPetAPI.Models
         public string? Email { get; set; }
 
         [JsonIgnore]
-        public ICollection<Animal> Animais { get; set;}
+        public ICollection<Animal> Animais { get; set; }
 
-        public int UsuarioId { get; set; }
+        //public int UsuarioId { get; set; }
 
-        [JsonIgnore]
-        public Usuario? Usuario { get; set; }
+        //[JsonIgnore]
+        //public Usuario? Usuario { get; set; }
     }
 }

@@ -4,16 +4,16 @@ using ReservasHotelPetAPI.Models;
 
 namespace ReservasHotelPetAPI.Context
 {
-    public class ApiReservasHotelPetContext : IdentityDbContext
+    public class ApiReservasHotelPetContext : IdentityDbContext<ApplicationUser>
     {
-        public ApiReservasHotelPetContext(DbContextOptions<ApiReservasHotelPetContext> options) : base ( options )
-        {
-                
-        }
+        public ApiReservasHotelPetContext(DbContextOptions<ApiReservasHotelPetContext> options) : base ( options ) { }
 
         public DbSet<Animal> Animais { get; set; }
         public DbSet<Tutor> Tutores { get; set; }
-        public DbSet<Usuario> Usuarios { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
     }
 }
