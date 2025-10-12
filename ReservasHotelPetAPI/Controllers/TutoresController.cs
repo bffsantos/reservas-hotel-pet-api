@@ -30,8 +30,8 @@ namespace ReservasHotelPetAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
         [Authorize]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<TutorDTO>>> Get()
         {
             var tutores = await _uof.TutorRepository.GetAllAsync();
@@ -137,6 +137,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpDelete("{id:int:min(1)}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<TutorDTO>> Delete(int id)
         {
             var tutor = await _uof.TutorRepository.GetAsync(t => t.Id == id);
