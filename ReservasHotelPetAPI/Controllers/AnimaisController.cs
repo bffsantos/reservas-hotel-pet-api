@@ -24,12 +24,12 @@ namespace ReservasHotelPetAPI.Controllers
     {
         private readonly IUnitOfWork _uof;
         private readonly IMapper _mapper;
-        private readonly ILogger<AnimaisController> _logger;
+        //private readonly ILogger<AnimaisController> _logger;
 
-        public AnimaisController(IUnitOfWork uof, ILogger<AnimaisController> logger, IMapper mapper)
+        public AnimaisController(IUnitOfWork uof, /*ILogger<AnimaisController> logger,*/ IMapper mapper)
         {
             _uof = uof;
-            _logger = logger;
+            //_logger = logger;
             _mapper = mapper;
         }
 
@@ -40,7 +40,7 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animais is null)
             {
-                _logger.LogWarning($"Tutor com id = {id} não encontrado.");
+                //_logger.LogWarning($"Tutor com id = {id} não encontrado.");
                 return NotFound($"Tutor com id = {id} não encontrado.");
             }
 
@@ -92,7 +92,7 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animais is null)
             {
-                _logger.LogWarning("Animais não encontrados.");
+                //_logger.LogWarning("Animais não encontrados.");
                 return NotFound("Animais não encontrados.");
             }
 
@@ -108,7 +108,7 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animal is null)
             {
-                _logger.LogWarning("Animal não encontrado.");
+                //_logger.LogWarning("Animal não encontrado.");
                 return NotFound("Animal não encontrado.");
             }
 
@@ -122,7 +122,7 @@ namespace ReservasHotelPetAPI.Controllers
         {
             if (animalDto is null)
             {
-                _logger.LogWarning("Dados inválidos.");
+                //_logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
@@ -167,7 +167,7 @@ namespace ReservasHotelPetAPI.Controllers
         {
             if (id != animalDto.Id)
             {
-                _logger.LogWarning("Dados inválidos.");
+                //_logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
@@ -188,7 +188,7 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animal is null)
             {
-                _logger.LogWarning("Animal não encontrado.");
+                //_logger.LogWarning("Animal não encontrado.");
                 return NotFound("Animal não encontrado.");
             }
 

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36202.13 d17.14
+VisualStudioVersion = 17.14.36202.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservasHotelPetAPI", "ReservasHotelPetAPI\ReservasHotelPetAPI.csproj", "{778D05E7-E7D9-40F6-A590-3B891C9A6671}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservasHotelPetAPITests", "ReservasHotelPetAPITests\ReservasHotelPetAPITests.csproj", "{179F4110-D0EB-44A7-B012-20616603D683}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{778D05E7-E7D9-40F6-A590-3B891C9A6671}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{778D05E7-E7D9-40F6-A590-3B891C9A6671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{778D05E7-E7D9-40F6-A590-3B891C9A6671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{179F4110-D0EB-44A7-B012-20616603D683}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{179F4110-D0EB-44A7-B012-20616603D683}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{179F4110-D0EB-44A7-B012-20616603D683}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{179F4110-D0EB-44A7-B012-20616603D683}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
