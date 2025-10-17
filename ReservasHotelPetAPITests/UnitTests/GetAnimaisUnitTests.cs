@@ -17,7 +17,7 @@ public class GetAnimaisUnitTests : IClassFixture<AnimaisUnitTestController>
     }
 
     [Fact]
-    public async Task GetProdutoById_OKResult()
+    public async Task GetAnimalById_OKResult()
     {
         //Arrange
         var prodId = 2;
@@ -35,7 +35,7 @@ public class GetAnimaisUnitTests : IClassFixture<AnimaisUnitTestController>
     }
 
     [Fact]
-    public async Task GetProdutoById_Return_NotFound()
+    public async Task GetAnimalById_Return_NotFound()
     {
         //Arrange  
         var prodId = 999;
@@ -49,7 +49,7 @@ public class GetAnimaisUnitTests : IClassFixture<AnimaisUnitTestController>
     }
 
     [Fact]
-    public async Task GetProdutoById_Return_BadRequest()
+    public async Task GetAnimalById_Return_BadRequest()
     {
         //Arrange  
         int prodId = -1;
@@ -63,7 +63,7 @@ public class GetAnimaisUnitTests : IClassFixture<AnimaisUnitTestController>
     }
 
     [Fact]
-    public async Task GetProdutos_Return_ListOfProdutoDTO()
+    public async Task GetAnimais_Return_ListOfProdutoDTO()
     {
         // Act  
         var data = await _controller.Get();
@@ -75,7 +75,7 @@ public class GetAnimaisUnitTests : IClassFixture<AnimaisUnitTestController>
     }
 
     [Fact]
-    public async Task GetProdutos_Return_BadRequestResult()
+    public async Task GetAnimais_Return_BadRequestResult()
     {
         // Act  
         var data = await _controller.Get();
