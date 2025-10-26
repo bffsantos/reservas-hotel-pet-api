@@ -30,12 +30,12 @@ namespace ReservasHotelPetAPI.DTOs
 
         [Required(ErrorMessage = "O campo telefone é obrigatório.")]
         [StringLength(80)]
-        [Phone]
+        //[Phone]
         public string? Telefone { get; set; }
 
         [Required(ErrorMessage = "O campo e-mail é obrigatório.")]
         [StringLength(80)]
-        [EmailAddress]
+        //[EmailAddress]
         public string? Email { get; set; }
     }
 }
