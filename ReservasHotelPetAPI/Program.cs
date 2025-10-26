@@ -36,7 +36,17 @@ builder.Services.AddControllers(options =>
 })
 .AddNewtonsoftJson();
 
-builder.Services.AddCors(options => options.AddDefaultPolicy( policy => {}));
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy("AllowVite",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // URL do seu front-end
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -180,7 +190,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCors();
+app.UseCors("AllowVite");
 
 app.UseAuthorization();
 app.MapControllers();

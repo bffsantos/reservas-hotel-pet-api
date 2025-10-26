@@ -1,6 +1,7 @@
 ﻿using AspNetCoreGeneratedDocument;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -85,7 +86,7 @@ namespace ReservasHotelPetAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "UserOnly")]
+        //[Authorize(Policy = "UserOnly")]
         public async Task<ActionResult<IEnumerable<AnimalDTO>>> Get()
         {
             var animais = await _uof.AnimalRepository.GetAllAsync();
