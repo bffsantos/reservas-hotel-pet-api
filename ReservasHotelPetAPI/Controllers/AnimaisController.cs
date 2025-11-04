@@ -1,20 +1,11 @@
-﻿using AspNetCoreGeneratedDocument;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs;
-using ReservasHotelPetAPI.Filters;
 using ReservasHotelPetAPI.Models;
 using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
-using System.Collections;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using X.PagedList;
 
 namespace ReservasHotelPetAPI.Controllers
@@ -25,12 +16,10 @@ namespace ReservasHotelPetAPI.Controllers
     {
         private readonly IUnitOfWork _uof;
         private readonly IMapper _mapper;
-        //private readonly ILogger<AnimaisController> _logger;
 
-        public AnimaisController(IUnitOfWork uof, /*ILogger<AnimaisController> logger,*/ IMapper mapper)
+        public AnimaisController(IUnitOfWork uof, IMapper mapper)
         {
             _uof = uof;
-            //_logger = logger;
             _mapper = mapper;
         }
 
@@ -41,7 +30,6 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animais is null)
             {
-                //_logger.LogWarning($"Tutor com id = {id} não encontrado.");
                 return NotFound($"Tutor com id = {id} não encontrado.");
             }
 
@@ -93,7 +81,6 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animais is null)
             {
-                //_logger.LogWarning("Animais não encontrados.");
                 return NotFound("Animais não encontrados.");
             }
 
@@ -109,7 +96,6 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animal is null)
             {
-                //_logger.LogWarning("Animal não encontrado.");
                 return NotFound("Animal não encontrado.");
             }
 
@@ -123,7 +109,6 @@ namespace ReservasHotelPetAPI.Controllers
         {
             if (animalDto is null)
             {
-                //_logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
@@ -168,7 +153,6 @@ namespace ReservasHotelPetAPI.Controllers
         {
             if (id != animalDto.Id)
             {
-                //_logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
@@ -189,7 +173,6 @@ namespace ReservasHotelPetAPI.Controllers
 
             if (animal is null)
             {
-                //_logger.LogWarning("Animal não encontrado.");
                 return NotFound("Animal não encontrado.");
             }
 

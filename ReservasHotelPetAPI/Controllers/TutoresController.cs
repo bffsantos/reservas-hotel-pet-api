@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs;
-using ReservasHotelPetAPI.DTOs.Mappings;
 using ReservasHotelPetAPI.Models;
 using ReservasHotelPetAPI.Pagination;
 using ReservasHotelPetAPI.Repositories.Interfaces;
-using System.ComponentModel.DataAnnotations;
 using X.PagedList;
 
 namespace ReservasHotelPetAPI.Controllers

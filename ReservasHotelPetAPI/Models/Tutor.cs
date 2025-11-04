@@ -42,12 +42,10 @@ namespace ReservasHotelPetAPI.Models
 
         [Required(ErrorMessage = "O campo telefone é obrigatório.")]
         [StringLength(80)]
-        //[Phone]
         public string? Telefone { get; set; }
 
         [Required(ErrorMessage = "O campo e-mail é obrigatório.")]
         [StringLength(80)]
-        //[EmailAddress]
         public string? Email { get; set; }
 
         [JsonIgnore]

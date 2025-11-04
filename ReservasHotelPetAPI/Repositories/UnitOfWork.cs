@@ -7,6 +7,7 @@ namespace ReservasHotelPetAPI.Repositories
     {
         private IAnimalRepository? _animalRepo;
         private ITutorRepository? _tutorRepo;
+        private IReservaRepository? _reservaRepo;
 
         public ApiReservasHotelPetContext _context;
 
@@ -27,6 +28,14 @@ namespace ReservasHotelPetAPI.Repositories
             get
             {
                 return _tutorRepo = _tutorRepo ?? new TutorRepository(_context);
+            }
+        }
+
+        public IReservaRepository ReservaRepository
+        {
+            get 
+            {
+                return _reservaRepo = _reservaRepo ?? new ReservaRepository(_context);
             }
         }
 

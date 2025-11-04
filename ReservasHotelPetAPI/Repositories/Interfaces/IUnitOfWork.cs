@@ -4,6 +4,7 @@
     {
         IAnimalRepository AnimalRepository { get; }
         ITutorRepository TutorRepository { get; }
+        IReservaRepository ReservaRepository { get; }
         Task CommitAsync();
 
     }
