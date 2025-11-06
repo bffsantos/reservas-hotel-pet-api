@@ -57,7 +57,16 @@ namespace ReservasHotelPetAPI.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
+            if (await _uof.ReservaRepository.PossuiReservaAsync(reservaDto))
+            {
+                return BadRequest("Não há vagas para este período.");
+            }
+
             var reserva = _mapper.Map<Reserva>(reservaDto);
+
+            var valorReserva = _uof.ReservaRepository.CalculaValorReserva(reservaDto);
+
+            reserva.ValorTotal = valorReserva;
 
             var reservaCriada = _uof.ReservaRepository.Create(reserva);
             await _uof.CommitAsync();

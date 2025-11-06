@@ -10,6 +10,7 @@ namespace ReservasHotelPetAPI.Context
 
         public DbSet<Animal> Animais { get; set; }
         public DbSet<Tutor> Tutores { get; set; }
+        public DbSet<Reserva> Reservas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
