@@ -86,6 +86,10 @@ namespace ReservasHotelPetAPI.Controllers
 
             var reserva = _mapper.Map<Reserva>(reservaDto);
 
+            var valorReserva = _uof.ReservaRepository.CalculaValorReserva(reservaDto);
+
+            reserva.ValorTotal = valorReserva;
+
             var reservaAtualizada = _uof.ReservaRepository.Update(reserva);
             await _uof.CommitAsync();
 
