@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace ReservasHotelPetAPI.Models
 {
+    [Table("Reservas")]
     public class Reserva
     {
         [Key]
