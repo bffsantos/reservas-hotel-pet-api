@@ -17,14 +17,14 @@ namespace ReservasHotelPetAPI.Repositories
             return _context.Tutores.ToList();
         }
 
-        public Tutor GetTutor(int id)
+        /*public Tutor GetTutor(int id)
         {
             return _context.Tutores.FirstOrDefault(t => t.Id == id);
         }
 
         public Tutor Create(Tutor tutor)
         {
-            if(tutor == null)
+            if (tutor == null)
                 throw new ArgumentNullException(nameof(tutor));
 
             _context.Tutores.Add(tutor);
@@ -55,7 +55,7 @@ namespace ReservasHotelPetAPI.Repositories
             _context.SaveChanges();
 
             return tutor;
-        }
+        }*/
 
         public async Task<IPagedList<Tutor>> GetTutoresAsync(TutoresParameters tutoresParams)
         {

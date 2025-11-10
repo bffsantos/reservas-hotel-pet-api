@@ -19,11 +19,11 @@ namespace ReservasHotelPetAPI.DTOs
         [Required]
         public TipoReserva Tipo { get; set; }
 
-        [Required]
-        public StatusReserva Status { get; set; } = StatusReserva.Pendente;
+        //[Required]
+        //public StatusReserva Status { get; set; } = StatusReserva.Pendente;
 
         public string? Observacoes { get; set; }
 
-        public decimal ValorTotal { get; set; }
+        //public decimal ValorTotal { get; set; }
     }
 }
