@@ -6,9 +6,10 @@ namespace ReservasHotelPetAPI.Repositories.Interfaces
 {
     public interface IReservaRepository : IRepository<Reserva>
     {
-
-        Task<bool> PossuiReservaAsync(ReservaDTO reservaDto);
-        decimal CalculaValorReserva(ReservaDTO reservaDto);
+        Task<IEnumerable<Reserva>> GetAllReservasAsync();
+        Task<Reserva> GetReservaAsync(int id);
+        Task<bool> PossuiReservaAsync(Reserva reserva);
+        decimal CalculaValorReserva(Reserva reserva);
         decimal ObterPrecoDiaria(TipoReserva tipo);
     }
 }

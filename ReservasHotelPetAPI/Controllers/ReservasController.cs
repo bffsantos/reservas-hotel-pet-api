@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.DTOs;
 using ReservasHotelPetAPI.Models;
+using ReservasHotelPetAPI.Models.Enums;
 using ReservasHotelPetAPI.Repositories.Interfaces;
 
 namespace ReservasHotelPetAPI.Controllers
@@ -22,7 +25,7 @@ namespace ReservasHotelPetAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReservaDTO>>> Get()
         {
-            var reservas = await _uof.ReservaRepository.GetAllAsync();
+            var reservas = await _uof.ReservaRepository.GetAllReservasAsync();
 
             if (reservas is null)
             {
@@ -37,7 +40,7 @@ namespace ReservasHotelPetAPI.Controllers
         [HttpGet("{id:int:min(1)}", Name = "ObterReserva")]
         public async Task<ActionResult<ReservaDTO>> Get(int id)
         {
-            var reserva = await _uof.ReservaRepository.GetAsync(r => r.Id == id);
+            var reserva = await _uof.ReservaRepository.GetReservaAsync(id);
 
             if (reserva is null)
             {
@@ -46,7 +49,7 @@ namespace ReservasHotelPetAPI.Controllers
 
             var reservaDto = _mapper.Map<ReservaDTO>(reserva);
 
-            return reservaDto;
+            return Ok(reservaDto);
         }
 
         [HttpPost]
@@ -57,14 +60,14 @@ namespace ReservasHotelPetAPI.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
-            if (await _uof.ReservaRepository.PossuiReservaAsync(reservaDto))
+            var reserva = _mapper.Map<Reserva>(reservaDto);
+            
+            if (await _uof.ReservaRepository.PossuiReservaAsync(reserva))
             {
                 return BadRequest("Não há vagas para este período.");
             }
 
-            var reserva = _mapper.Map<Reserva>(reservaDto);
-
-            var valorReserva = _uof.ReservaRepository.CalculaValorReserva(reservaDto);
+            var valorReserva = _uof.ReservaRepository.CalculaValorReserva(reserva);
 
             reserva.ValorTotal = valorReserva;
 
@@ -80,20 +83,70 @@ namespace ReservasHotelPetAPI.Controllers
         public async Task<ActionResult<ReservaDTO>> Put(int id, ReservaDTO reservaDto)
         {
             if (id != reservaDto.Id)
-            {
                 return BadRequest("Dados inválidos.");
-            }
 
-            var reserva = _mapper.Map<Reserva>(reservaDto);
+            var reservaExistente = await _uof.ReservaRepository.GetReservaAsync(id);
+            if (reservaExistente == null)
+                return NotFound();
 
-            var valorReserva = _uof.ReservaRepository.CalculaValorReserva(reservaDto);
+            reservaExistente.DataCheckIn = reservaDto.DataCheckIn;
+            reservaExistente.DataCheckOut = reservaDto.DataCheckOut;
+            reservaExistente.Tipo = Enum.Parse<TipoReserva>(reservaDto.Tipo);
+            reservaExistente.Observacoes = reservaDto.Observacoes;
 
-            reserva.ValorTotal = valorReserva;
+            reservaExistente.ValorTotal = _uof.ReservaRepository.CalculaValorReserva(reservaExistente);
 
-            var reservaAtualizada = _uof.ReservaRepository.Update(reserva);
+            _uof.ReservaRepository.Update(reservaExistente);
             await _uof.CommitAsync();
 
-            var reservaAtualizadaDto = _mapper.Map<ReservaDTO>(reservaAtualizada);
+            var reservaAtualizadaDto = _mapper.Map<ReservaDTO>(reservaExistente);
+            return Ok(reservaAtualizadaDto);
+        }
+
+        [HttpPut("{id}/Cancelar")]
+        public async Task<ActionResult<ReservaDTO>> CancelarReserva(int id)
+        {
+            var reserva = await _uof.ReservaRepository.GetReservaAsync(id);
+
+            if (reserva == null)
+                return NotFound("Reserva não encontrada.");
+
+            if (reserva.Status == StatusReserva.Cancelada)
+                return BadRequest("A reserva já está cancelada.");
+
+            if (reserva.Status == StatusReserva.Confirmada)
+                return BadRequest("Não é possível cancelar uma reserva já confirmada.");
+
+            reserva.Status = StatusReserva.Cancelada;
+            //reserva.DataAtualizacao = DateTime.UtcNow;
+
+            await _uof.CommitAsync();
+
+            var reservaAtualizadaDto = _mapper.Map<ReservaDTO>(reserva);
+
+            return Ok(reservaAtualizadaDto);
+        }
+
+        [HttpPut("{id}/Confirmar")]
+        public async Task<IActionResult> ConfirmarReserva(int id)
+        {
+            var reserva = await _uof.ReservaRepository.GetReservaAsync(id);
+
+            if (reserva == null)
+                return NotFound("Reserva não encontrada.");
+
+            if (reserva.Status == StatusReserva.Cancelada)
+                return BadRequest("Não é possível confirmar uma reserva cancelada.");
+
+            if (reserva.Status == StatusReserva.Confirmada)
+                return BadRequest("A reserva já foi confirmada.");
+
+            reserva.Status = StatusReserva.Confirmada;
+            //reserva.DataAtualizacao = DateTime.UtcNow;
+
+            await _uof.CommitAsync();
+
+            var reservaAtualizadaDto = _mapper.Map<ReservaDTO>(reserva);
 
             return Ok(reservaAtualizadaDto);
         }

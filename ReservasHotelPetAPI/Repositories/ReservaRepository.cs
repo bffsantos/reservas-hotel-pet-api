@@ -1,4 +1,6 @@
 ﻿using Humanizer;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservasHotelPetAPI.Context;
 using ReservasHotelPetAPI.DTOs;
@@ -16,26 +18,24 @@ namespace ReservasHotelPetAPI.Repositories
         {
         }
 
-        public async Task<bool> PossuiReservaAsync(ReservaDTO reservaDto)
+        public async Task<bool> PossuiReservaAsync(Reserva reserva)
         {
-            var reservas = await GetAllAsync();
-            
-            var countReservas =  await _context.Reservas.Where(r =>
+            var countReservas = await _context.Reservas.Where(r =>
                 r.Status != StatusReserva.Cancelada &&
                 (
-                    (reservaDto.DataCheckIn >= r.DataCheckIn && reservaDto.DataCheckIn < r.DataCheckOut) ||
-                    (reservaDto.DataCheckOut > r.DataCheckIn && reservaDto.DataCheckOut <= r.DataCheckOut) ||
-                    (reservaDto.DataCheckIn <= r.DataCheckIn && reservaDto.DataCheckOut >= r.DataCheckOut)
+                    (reserva.DataCheckIn >= r.DataCheckIn && reserva.DataCheckIn < r.DataCheckOut) ||
+                    (reserva.DataCheckOut > r.DataCheckIn && reserva.DataCheckOut <= r.DataCheckOut) ||
+                    (reserva.DataCheckIn <= r.DataCheckIn && reserva.DataCheckOut >= r.DataCheckOut)
                 )
             ).CountAsync();
 
             return countReservas >= CapacidadeMaxima;
         }
 
-        public decimal CalculaValorReserva(ReservaDTO reservaDto)
+        public decimal CalculaValorReserva(Reserva reserva)
         {
-            var precoDiaria = ObterPrecoDiaria(reservaDto.Tipo);
-            var dias = Math.Max((reservaDto.DataCheckOut - reservaDto.DataCheckIn).Days, 1);
+            var precoDiaria = ObterPrecoDiaria(reserva.Tipo);
+            var dias = Math.Max((reserva.DataCheckOut - reserva.DataCheckIn).Days, 1);
             var total = precoDiaria * dias;
 
             return total;
@@ -50,6 +50,20 @@ namespace ReservasHotelPetAPI.Repositories
                 TipoReserva.Vip => 180m,
                 _ => 0m
             };
+        }
+
+        public async Task<Reserva> GetReservaAsync(int id)
+        {
+            var reserva = await _context.Reservas.Include(r => r.Animal).FirstOrDefaultAsync(r => r.Id == id);
+
+            return reserva;
+        }
+
+        public async Task<IEnumerable<Reserva>> GetAllReservasAsync()
+        {
+            var reservas = await _context.Reservas.Include(r => r.Animal).ToListAsync();
+
+            return reservas;
         }
     }
 }

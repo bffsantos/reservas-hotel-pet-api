@@ -1,5 +1,6 @@
 ﻿using ReservasHotelPetAPI.Models.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ReservasHotelPetAPI.DTOs
 {
@@ -7,8 +8,9 @@ namespace ReservasHotelPetAPI.DTOs
     {
         public int Id { get; set; }
 
-        [Required]
         public int AnimalId { get; set; }
+
+        public string? AnimalNome { get; set; }
 
         [Required]
         public DateTime DataCheckIn { get; set; }
@@ -17,13 +19,12 @@ namespace ReservasHotelPetAPI.DTOs
         public DateTime DataCheckOut { get; set; }
 
         [Required]
-        public TipoReserva Tipo { get; set; }
+        public string? Tipo { get; set; }
 
-        //[Required]
-        //public StatusReserva Status { get; set; } = StatusReserva.Pendente;
+        public string? Status { get; set; } = "Pendente";
 
         public string? Observacoes { get; set; }
 
-        //public decimal ValorTotal { get; set; }
+        public decimal ValorTotal { get; set; }
     }
 }
