@@ -38,18 +38,12 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddCors(options => 
 {
-    options.AddPolicy("AllowVite",
+    options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // URL do seu front-end
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
-    options.AddPolicy("AllowRender", 
-        policy =>
-        {
-            policy.WithOrigins("https://reservas-hotel-pet-front.onrender.com") // URL do seu front-end no cloud
+            policy.WithOrigins(
+                "http://localhost:5173",
+                "https://reservas-hotel-pet-front.onrender.com") // URL do seu front-end
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -203,12 +197,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.ConfigureExceptionHandler();
-    app.UseCors("AllowVite");
 }
-else
-{
-    app.UseCors("AllowRender");
-}
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();

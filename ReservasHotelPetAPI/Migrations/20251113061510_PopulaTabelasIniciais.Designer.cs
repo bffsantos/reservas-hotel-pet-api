@@ -12,8 +12,8 @@ using ReservasHotelPetAPI.Context;
 namespace ReservasHotelPetAPI.Migrations
 {
     [DbContext(typeof(ApiReservasHotelPetContext))]
-    [Migration("20251005213035_PopularAnimais")]
-    partial class PopularAnimais
+    [Migration("20251113061510_PopulaTabelasIniciais")]
+    partial class PopulaTabelasIniciais
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -268,6 +268,43 @@ namespace ReservasHotelPetAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ReservasHotelPetAPI.Models.Reserva", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnimalId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DataCheckIn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DataCheckOut")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Observacoes")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnimalId");
+
+                    b.ToTable("Reservas");
+                });
+
             modelBuilder.Entity("ReservasHotelPetAPI.Models.Tutor", b =>
                 {
                     b.Property<int>("Id")
@@ -377,6 +414,17 @@ namespace ReservasHotelPetAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Tutor");
+                });
+
+            modelBuilder.Entity("ReservasHotelPetAPI.Models.Reserva", b =>
+                {
+                    b.HasOne("ReservasHotelPetAPI.Models.Animal", "Animal")
+                        .WithMany()
+                        .HasForeignKey("AnimalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Animal");
                 });
 
             modelBuilder.Entity("ReservasHotelPetAPI.Models.Tutor", b =>
