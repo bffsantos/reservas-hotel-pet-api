@@ -46,6 +46,14 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod()
                   .AllowCredentials();
         });
+    options.AddPolicy("AllowRender", 
+        policy =>
+        {
+            policy.WithOrigins("https://reservas-hotel-pet-front.onrender.com/") // URL do seu front-end no cloud
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
 });
 
 builder.Services.AddControllers()
@@ -198,6 +206,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors("AllowVite");
+app.UseCors("AllowRender");
 
 app.UseAuthorization();
 app.MapControllers();
