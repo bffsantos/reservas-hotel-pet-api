@@ -49,7 +49,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowRender", 
         policy =>
         {
-            policy.WithOrigins("https://reservas-hotel-pet-front.onrender.com/") // URL do seu front-end no cloud
+            policy.WithOrigins("https://reservas-hotel-pet-front.onrender.com") // URL do seu front-end no cloud
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -193,22 +193,26 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(ModelsToDTOMappingProfile));
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     app.ConfigureExceptionHandler();
+    app.UseCors("AllowVite");
+}
+else
+{
+    app.UseCors("AllowRender");
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-
-app.UseCors("AllowVite");
-app.UseCors("AllowRender");
-
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
