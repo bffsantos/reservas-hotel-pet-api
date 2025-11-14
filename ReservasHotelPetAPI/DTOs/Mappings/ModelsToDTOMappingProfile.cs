@@ -21,9 +21,10 @@ namespace ReservasHotelPetAPI.DTOs.Mappings
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
 
             CreateMap<ReservaDTO, Reserva>()
-                .ForMember(dest => dest.Animal, opt => opt.MapFrom(src => new Animal { Nome = src.AnimalNome }))
+                .ForMember(dest => dest.Animal, opt => opt.Ignore())
                 .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => Enum.Parse<TipoReserva>(src.Tipo.ToString())))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<StatusReserva>(src.Status.ToString())));
+                
         }
     }
 }
